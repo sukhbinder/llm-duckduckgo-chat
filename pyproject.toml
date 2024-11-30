@@ -1,0 +1,31 @@
+[project]
+name = "llm-duckduckgo-chat"
+version = "0.1"
+description = "LLM plugin for Duckduckgo AI Chat service"
+readme = "README.md"
+authors = [{name = "Sukhbinder Singh"}]
+license = {text = "Apache-2.0"}
+classifiers = [
+    "License :: OSI Approved :: Apache Software License"
+]
+requires-python = ">=3.9"
+dependencies = [
+    "llm",
+    "requests",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+Homepage = "https://github.com/sukhbinder/llm-duckduckgo-chat"
+Changelog = "https://github.com/sukhbinder/llm-duckduckgo-chat/releases"
+Issues = "https://github.com/sukhbinder/llm-duckduckgo-chat/issues"
+CI = "https://github.com/sukhbinder/llm-duckduckgo-chat/actions"
+
+[project.entry-points.llm]
+llm_duckduckgo_chat = "llm_duckduckgo_chat"
+
+[project.optional-dependencies]
+test = ["pytest"]
