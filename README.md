@@ -5,7 +5,7 @@
 [![Tests](https://github.com/sukhbinder/llm-duckduckgo-chat/actions/workflows/test.yml/badge.svg)](https://github.com/sukhbinder/llm-duckduckgo-chat/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/sukhbinder/llm-duckduckgo-chat/blob/main/LICENSE)
 
-LLM plugin for talkig to models exposed by DuckDuckGo AI Chat service.
+LLM plugin for talking to models exposed by DuckDuckGo AI Chat service.
 
 
 ## Installation
