@@ -5,12 +5,13 @@
 [![Tests](https://github.com/sukhbinder/llm-duckduckgo-chat/actions/workflows/test.yml/badge.svg)](https://github.com/sukhbinder/llm-duckduckgo-chat/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/sukhbinder/llm-duckduckgo-chat/blob/main/LICENSE)
 
-LLM plugin for Duckduckgo ai service
+LLM plugin for talkig to models exposed by DuckDuckGo AI Chat service.
 
 
 ## Installation
 
 Install this plugin in the same environment as [LLM](https://llm.datasette.io/).
+
 ```bash
 llm install llm-duckduckgo-chat
 ```
