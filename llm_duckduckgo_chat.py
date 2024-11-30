@@ -89,8 +89,10 @@ class DuckChatModel(llm.Model):
         messages = []
         if not conversation:
             if prompt.system:
-                messages.append({"role": "system", "content": prompt.system})
-            messages.append({"role": "user", "content": prompt.prompt})
+                # system message not accepted
+                messages.append({"role": "user", "content": prompt.prompt + " " + prompt.system})
+            else:
+                messages.append({"role": "user", "content": prompt.prompt})
             return messages
 
         for prev_response in conversation.responses:
