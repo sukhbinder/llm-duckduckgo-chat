@@ -17,11 +17,30 @@ llm install llm-duckduckgo-chat
 ```
 ## Usage
 
-Usage instructions go here.
+To see exposed models
+
+```bash
+llm models
+```
+
+Available models:
+
+- gpt4o
+- claude3
+- llama70b
+- mixtral
+
+
+To chat with a model
+
+```bash
+llm -m gpt4o "What is DuckDuckGo"
+```
 
 ## Development
 
 To set up this plugin locally, first checkout the code. Then create a new virtual environment:
+
 ```bash
 cd llm-duckduckgo-chat
 python -m venv venv
