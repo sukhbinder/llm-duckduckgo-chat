@@ -23,12 +23,15 @@ To see exposed models
 llm models
 ```
 
-Available models:
+## Available Models
 
-- gpt4o
-- claude3
-- llama70b
-- mixtral
+| Model | Performance | Best For | Features |
+|-------|------------|----------|-----------|
+| **GPT-4o mini** | Fast | Quick answers & basic tasks | • General-purpose |
+| **Claude 3 Haiku** | Balanced | Technical discussions | • Good context handling<br>• Structured responses |
+| **Llama 3.3** | Code-optimized | Programming tasks | • Documentation analysis<br>• Code generation |
+| **Mixtral 8x7B** | Knowledge-focused | Complex topics | • Detailed explanations<br>• Deep analysis |
+| **o3-mini** | Fastest | Simple queries | • Lightweight<br>• Quick responses |
 
 
 To chat with a model

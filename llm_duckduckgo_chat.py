@@ -13,6 +13,7 @@ MODELS = {
     "claude3": "claude-3-haiku-20240307",
     "llama70b": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
     "mixtral": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+    "o3mini": "o3-mini",
 }
 
 
@@ -36,8 +37,7 @@ class DuckChatModel(llm.Model):
         """Parameters that can be set when the model is run by vqd."""
 
         vqd: Optional[str] = Field(
-            default=None,
-            description=("vqd "),
+            default=None, description=("vqd "),
         )
 
     def __init__(self, model_id: str):
