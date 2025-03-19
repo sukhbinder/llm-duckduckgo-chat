@@ -2,7 +2,6 @@ import requests
 import json
 from threading import Thread
 from queue import Queue
-import sys
 import llm
 from typing import Optional
 from pydantic import Field
@@ -12,7 +11,7 @@ MODELS = {
     "gpt4o": "gpt-4o-mini",
     "claude3": "claude-3-haiku-20240307",
     "llama70b": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-    "mixtral": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+    "mixtral": "mistralai/Mistral-Small-24B-Instruct-2501",
     "o3mini": "o3-mini",
 }
 
@@ -37,7 +36,8 @@ class DuckChatModel(llm.Model):
         """Parameters that can be set when the model is run by vqd."""
 
         vqd: Optional[str] = Field(
-            default=None, description=("vqd "),
+            default=None,
+            description=("vqd "),
         )
 
     def __init__(self, model_id: str):

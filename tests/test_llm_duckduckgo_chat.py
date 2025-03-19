@@ -14,9 +14,10 @@ def test_execute_without_conversation(duckchat_model):
     prompt.system = None
     prompt.options = MagicMock()
 
-    with patch.object(DuckChat, "fetch_vqd", return_value="test_vqd"), patch.object(
-        DuckChat, "fetch_response"
-    ) as mock_fetch_response:
+    with (
+        patch.object(DuckChat, "fetch_vqd", return_value="test_vqd"),
+        patch.object(DuckChat, "fetch_response") as mock_fetch_response,
+    ):
         mock_response = MagicMock()
         mock_response.headers = {"x-vqd-4": "new_vqd"}
         mock_response.iter_lines.return_value = [
@@ -47,9 +48,10 @@ def test_execute_with_conversation(duckchat_model):
         ),
     ]
 
-    with patch.object(DuckChat, "fetch_vqd", return_value="test_vqd"), patch.object(
-        DuckChat, "fetch_response"
-    ) as mock_fetch_response:
+    with (
+        patch.object(DuckChat, "fetch_vqd", return_value="test_vqd"),
+        patch.object(DuckChat, "fetch_response") as mock_fetch_response,
+    ):
         mock_response = MagicMock()
         mock_response.headers = {"x-vqd-4": "new_vqd"}
         mock_response.iter_lines.return_value = [
