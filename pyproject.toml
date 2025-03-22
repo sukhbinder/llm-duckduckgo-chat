@@ -1,6 +1,6 @@
 [project]
 name = "llm-duckduckgo-chat"
-version = "0.1.4"
+version = "0.1.5"
 description = "LLM plugin for Duckduckgo AI Chat service"
 readme = "README.md"
 authors = [{name = "Sukhbinder Singh"}]

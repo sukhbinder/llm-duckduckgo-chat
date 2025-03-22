@@ -15,11 +15,11 @@ def test_execute_without_conversation(duckchat_model):
     prompt.options = MagicMock()
 
     with (
-        patch.object(DuckChat, "fetch_vqd", return_value="test_vqd"),
+        patch.object(DuckChat, "fetch_vqd", return_value=["test_vqd", "test_hash"]),
         patch.object(DuckChat, "fetch_response") as mock_fetch_response,
     ):
         mock_response = MagicMock()
-        mock_response.headers = {"x-vqd-4": "new_vqd"}
+        mock_response.headers = {"x-vqd-4": "new_vqd", "x-vqd-hash-1": "new_hash"}
         mock_response.iter_lines.return_value = [
             b'data: {"message": "I am fine."}',
             b"data: [DONE]",
@@ -33,6 +33,7 @@ def test_execute_without_conversation(duckchat_model):
 
         assert final_message == "I am fine."
         assert prompt.options.vqd == "new_vqd"
+        assert prompt.options.vqdhash == "new_hash"
 
 
 def test_execute_with_conversation(duckchat_model):
@@ -49,11 +50,11 @@ def test_execute_with_conversation(duckchat_model):
     ]
 
     with (
-        patch.object(DuckChat, "fetch_vqd", return_value="test_vqd"),
+        patch.object(DuckChat, "fetch_vqd", return_value=["test_vqd", "test_hash"]),
         patch.object(DuckChat, "fetch_response") as mock_fetch_response,
     ):
         mock_response = MagicMock()
-        mock_response.headers = {"x-vqd-4": "new_vqd"}
+        mock_response.headers = {"x-vqd-4": "new_vqd", "x-vqd-hash-1": "new_hash"}
         mock_response.iter_lines.return_value = [
             b'data: {"message": "It is sunny."}',
             b"data: [DONE]",
@@ -69,17 +70,19 @@ def test_execute_with_conversation(duckchat_model):
 
         assert final_message == "It is sunny."
         assert prompt.options.vqd == "new_vqd"
+        assert prompt.options.vqdhash == "new_hash"
 
 
 def test_fetch_vqd_success():
     with patch("requests.get") as mock_get:
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.headers = {"x-vqd-4": "test_vqd"}
+        mock_response.headers = {"x-vqd-4": "test_vqd", "x-vqd-hash-1": "hash"}
         mock_get.return_value = mock_response
 
-        vqd = DuckChat.fetch_vqd()
+        vqd, vqdhash = DuckChat.fetch_vqd()
         assert vqd == "test_vqd"
+        assert vqdhash == "hash"
 
 
 def test_fetch_response_success():
@@ -89,7 +92,7 @@ def test_fetch_response_success():
         mock_post.return_value = mock_response
 
         response = DuckChat.fetch_response(
-            "https://example.com", "test_vqd", "gpt-4o-mini", []
+            "https://example.com", "test_vqd", "hash", "gpt-4o-mini", []
         )
         assert response == mock_response
 
@@ -103,5 +106,5 @@ def test_fetch_response_failure():
 
         with pytest.raises(Exception, match="Failed to send message: 400 Bad Request"):
             DuckChat.fetch_response(
-                "https://example.com", "test_vqd", "gpt-4o-mini", []
+                "https://example.com", "test_vqd", "hash", "gpt-4o-mini", []
             )

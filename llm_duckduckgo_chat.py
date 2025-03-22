@@ -40,6 +40,11 @@ class DuckChatModel(llm.Model):
             description=("vqd "),
         )
 
+        vqdhash: Optional[str] = Field(
+            default=None,
+            description=("vqdhash "),
+        )
+
     def __init__(self, model_id: str):
         self.model_id = model_id
 
@@ -59,9 +64,10 @@ class DuckChatModel(llm.Model):
 
         if conversation:
             vqd = conversation.responses[-1].prompt.options.vqd
+            vqdhash = conversation.responses[-1].prompt.options.vqdhash
         else:
             try:
-                vqd = duckchat.fetch_vqd()
+                vqd, vqdhash = duckchat.fetch_vqd()
             except Exception as e:
                 raise RuntimeError(f"Failed to fetch vqd: {e}")
 
@@ -69,6 +75,7 @@ class DuckChatModel(llm.Model):
             chat_response = duckchat.fetch_response(
                 chat_url="https://duckduckgo.com/duckchat/v1/chat",
                 vqd=vqd,
+                vqd_hash_1=vqdhash,
                 model=self.model_id,
                 messages=messages,
             )
@@ -77,6 +84,9 @@ class DuckChatModel(llm.Model):
 
         vqd = chat_response.headers.get("x-vqd-4", "")
         prompt.options.vqd = vqd
+
+        vqdhash = chat_response.headers.get("x-vqd-hash-1", "")
+        prompt.options.vqdhash = vqdhash
 
         if stream:
             for message in duckchat.process_stream(chat_response):
@@ -114,17 +124,19 @@ class DuckChat:
     """Utility class to handle interactions with DuckDuckGo Chat."""
 
     _vqd_cache = None
+    _vqd_hash_1 = None
 
     @staticmethod
     def fetch_vqd():
         if DuckChat._vqd_cache:
-            return DuckChat._vqd_cache
+            return DuckChat._vqd_cache, DuckChat._vqd_hash_1
         url = "https://duckduckgo.com/duckchat/v1/status"
         headers = {"x-vqd-accept": "1"}
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             DuckChat._vqd_cache = response.headers.get("x-vqd-4")
-            return DuckChat._vqd_cache
+            DuckChat._vqd_hash_1 = response.headers.get("x-vqd-hash-1", "")
+            return DuckChat._vqd_cache, DuckChat._vqd_hash_1
         elif response.status_code == 429:
             raise RateLimitError("Too many requests. Please try again later.")
         else:
@@ -133,13 +145,16 @@ class DuckChat:
             )
 
     @staticmethod
-    def fetch_response(chat_url, vqd, model, messages):
+    def fetch_response(chat_url, vqd, vqd_hash_1, model, messages):
         payload = {"model": model, "messages": messages}
         headers = {
             "x-vqd-4": vqd,
             "Content-Type": "application/json",
             "Accept": "text/event-stream",
         }
+        if vqd_hash_1:
+            headers["x-vqd-hash-1"] = vqd_hash_1
+
         response = requests.post(chat_url, headers=headers, json=payload, stream=True)
 
         if response.status_code != 200:
