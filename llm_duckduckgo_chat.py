@@ -63,8 +63,15 @@ class DuckChatModel(llm.Model):
         response._prompt_json = {"messages": messages}
 
         if conversation:
-            vqd = conversation.responses[-1].prompt.options.vqd
-            vqdhash = conversation.responses[-1].prompt.options.vqdhash
+            # for llm chat, vqd's should be fetched for first response.
+            try:
+                vqd = conversation.responses[-1].prompt.options.vqd
+                vqdhash = conversation.responses[-1].prompt.options.vqdhash
+            except IndexError as ex:
+                try:
+                    vqd, vqdhash = duckchat.fetch_vqd()
+                except Exception as e:
+                    raise RuntimeError(f"Failed to fetch vqd: {e}")
         else:
             try:
                 vqd, vqdhash = duckchat.fetch_vqd()
@@ -157,7 +164,12 @@ class DuckChat:
 
         response = requests.post(chat_url, headers=headers, json=payload, stream=True)
 
-        if response.status_code != 200:
+        if response.status_code == 429:
+            raise RateLimitError(
+                f"Too many requests. Please try again later. {response.status_code} {response.text}"
+            )
+
+        elif response.status_code != 200:
             raise Exception(
                 f"Failed to send message: {response.status_code} {response.text}"
             )
