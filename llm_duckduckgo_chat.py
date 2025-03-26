@@ -5,6 +5,8 @@ from queue import Queue
 import llm
 from typing import Optional
 from pydantic import Field
+import string
+import random
 
 
 MODELS = {
@@ -92,7 +94,7 @@ class DuckChatModel(llm.Model):
         vqd = chat_response.headers.get("x-vqd-4", "")
         prompt.options.vqd = vqd
 
-        vqdhash = chat_response.headers.get("x-vqd-hash-1", "")
+        # vqdhash = chat_response.headers.get("x-vqd-hash-1", "")
         prompt.options.vqdhash = vqdhash
 
         if stream:
@@ -138,11 +140,26 @@ class DuckChat:
         if DuckChat._vqd_cache:
             return DuckChat._vqd_cache, DuckChat._vqd_hash_1
         url = "https://duckduckgo.com/duckchat/v1/status"
-        headers = {"x-vqd-accept": "1"}
+        headers = {
+            "accept": "text/event-stream",
+            "accept-language": "en-US,en;q=0.9",
+            "cache-control": "no-cache",
+            "content-type": "application/json",
+            "pragma": "no-cache",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+            "origin": "https://duckduckgo.com",
+            "referer": "https://duckduckgo.com/",
+            "x-vqd-accept": "1",
+        }
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
-            DuckChat._vqd_cache = response.headers.get("x-vqd-4")
-            DuckChat._vqd_hash_1 = response.headers.get("x-vqd-hash-1", "")
+            random_hash = "".join(
+                random.choice(string.ascii_lowercase) for _ in range(7)
+            )
+            vqd_hash_1 = random_hash
+            vqd = response.headers.get("x-vqd-4")
+            DuckChat._vqd_cache = vqd
+            DuckChat._vqd_hash_1 = vqd_hash_1
             return DuckChat._vqd_cache, DuckChat._vqd_hash_1
         elif response.status_code == 429:
             raise RateLimitError("Too many requests. Please try again later.")
@@ -155,11 +172,15 @@ class DuckChat:
     def fetch_response(chat_url, vqd, vqd_hash_1, model, messages):
         payload = {"model": model, "messages": messages}
         headers = {
+            "accept": "text/event-stream",
+            "accept-language": "en-US,en;q=0.9",
+            "content-type": "application/json",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+            "origin": "https://duckduckgo.com",
+            "referer": "https://duckduckgo.com/",
             "x-vqd-4": vqd,
-            "Content-Type": "application/json",
-            "Accept": "text/event-stream",
         }
-        if vqd_hash_1:
+        if vqd and vqd_hash_1:
             headers["x-vqd-hash-1"] = vqd_hash_1
 
         response = requests.post(chat_url, headers=headers, json=payload, stream=True)

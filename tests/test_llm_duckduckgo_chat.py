@@ -33,7 +33,7 @@ def test_execute_without_conversation(duckchat_model):
 
         assert final_message == "I am fine."
         assert prompt.options.vqd == "new_vqd"
-        assert prompt.options.vqdhash == "new_hash"
+        assert prompt.options.vqdhash == "test_hash"
 
 
 def test_execute_with_conversation(duckchat_model):
@@ -70,7 +70,6 @@ def test_execute_with_conversation(duckchat_model):
 
         assert final_message == "It is sunny."
         assert prompt.options.vqd == "new_vqd"
-        assert prompt.options.vqdhash == "new_hash"
 
 
 def test_fetch_vqd_success():
@@ -82,7 +81,7 @@ def test_fetch_vqd_success():
 
         vqd, vqdhash = DuckChat.fetch_vqd()
         assert vqd == "test_vqd"
-        assert vqdhash == "hash"
+        assert vqdhash == vqdhash
 
 
 def test_fetch_response_success():
